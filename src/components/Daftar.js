@@ -1,16 +1,22 @@
 import React,{useState} from 'react';
 import {Link} from 'react-router-dom';
+import axios from 'axios';
 
 const Daftar = () => {
 
 	const [username, setUsername] = useState('');
 	const [email, setEmail] 	  = useState('');
 	const [password, setPassword] = useState('');
+	const [alert,setAlert] 		  = useState('');
+	const [error,setError] 		  = useState('');
+
+	const API_URL = "http://localhost:3001";
 
 	const onChangeUsername = (e) => {
 		// console.log(e.target.value);
 		const value = e.target.value;
 		setUsername(value);
+		setError('');
 
 	}
 
@@ -18,15 +24,46 @@ const Daftar = () => {
 		// console.log(e.target.value);
 		const value = e.target.value;
 		setEmail(value);
+		setError('');
 	}
 
 	const onChangePassword = (e) => {
 		// console.log(e.target.value);
 		const value = e.target.value;
 		setPassword(value);
+		setError('');
 	}
 
-	
+	const klikDaftar = () => {
+
+		const data = {
+			username : username,
+			email : email,
+			password : password
+		}
+
+		axios.post(API_URL+'/daftar',data)
+		.then(result => {
+			if(result) {
+
+				if(result.data){
+					setAlert(result.data.message);
+					setUsername('');
+					setEmail('');
+					setPassword('');
+					setTimeout(() => {
+						setAlert('')
+					},3000)
+				}
+			}
+		})
+		.catch(function (error) {
+		    if (error.response) {
+				setError(error.response.data.message);
+		    } 
+ 		 });
+	}
+		
 
 	return(
 		<div style={{marginTop:"200px"}}>
@@ -36,6 +73,25 @@ const Daftar = () => {
 					<div className="col-md-6">
 						<div className="card">
 							<div className="card-body">
+
+							{
+								error && (
+									<div className="alert alert-danger">
+										{error}
+									</div>
+								)
+							}
+
+							{
+								alert && (
+									<div className="alert alert-primary">
+										{alert}
+									</div>
+								)
+							}
+							
+
+							
 
 							<div className="form-group">
 								<label>Username</label>
@@ -49,10 +105,10 @@ const Daftar = () => {
 
 							<div className="form-group">
 								<label>Password</label>
-								<input type="text" placeholder="Password" className="form-control" value={password} onChange={onChangePassword}/>
+								<input type="password" placeholder="Password" className="form-control" value={password} onChange={onChangePassword}/>
 							</div>
 
-							<button className="btn btn-primary">Daftar</button>{' '}
+							<button className="btn btn-primary" onClick ={klikDaftar}>Daftar</button>{' '}
 							<Link to="/" className="btn btn-warning">Batal</Link>
 
 							</div>

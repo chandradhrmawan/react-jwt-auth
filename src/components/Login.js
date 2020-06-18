@@ -1,15 +1,21 @@
 import React,{ useState } from 'react';
 import {Link} from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	// const [alert,setAlert] 		  = useState('');
+	const [error,setError] 		  = useState('');
+
+	const API_URL = "http://localhost:3001";
 
 	const onChangeUsername = (e) => {
 		// console.log(e.target.value);
 		const value = e.target.value;
 		setUsername(value);
+		setError('');
 
 	}
 
@@ -17,6 +23,43 @@ const Login = () => {
 		// console.log(e.target.value);
 		const value = e.target.value;
 		setPassword(value);
+		setError('');
+	}
+
+	const submitLogin = () => {
+		
+		const data = {
+			username : username,
+			password : password
+		}
+
+		axios.post(API_URL+'/login',data)
+		.then(result => {
+			if(result) {
+
+				if(result.data){
+					// setAlert(result.data.message);
+					setUsername('');
+					setPassword('');
+					/*setTimeout(() => {
+						setAlert('')
+					},3000)*/
+				}
+			}
+
+			console.log(result);
+
+		})
+		.catch( (error) => {
+
+			console.log(error)
+
+		    if (error.response) {
+				
+				setError(error.response.data.message);
+		    } 
+ 		 });
+
 	}
 
 	return (
@@ -40,7 +83,7 @@ const Login = () => {
 
 								<div className="row">
 									<div className="col-md-6">
-										<button className="btn btn-primary">Login</button>
+										<button className="btn btn-primary" onClick={submitLogin}>Login</button>
 									</div>
 
 									<div className="col-md-6 text-right">
